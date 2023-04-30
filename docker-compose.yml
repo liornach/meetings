@@ -1,0 +1,104 @@
+# List of all services (containers):
+services:
+
+  #1. Appointments database
+  appointments-database-service:
+
+    # Database image name:
+    image: lior54/appointments-database-image:1.0
+
+    # Build image from docker file locaion:
+    build: ./Database
+
+    # Container name:
+    container_name: appointments-database-container
+
+    # Port binding:
+    ports:
+      - 3306:3306
+
+    # Restart policy:
+    restart: unless-stopped
+
+    # Environment variables:
+    environment:
+      - MYSQL_HOST=localhost # Internally for the container
+      - MYSQL_DATABASE=appointments
+      - MYSQL_USER=Lior
+      - MYSQL_PASSWORD=Nachmias
+      - MYSQL_ROOT_PASSWORD=Nachmias # Needed by MySql image:
+
+    # Named volume for persisting the data:
+    volumes:
+      - appointments-db:/var/lib/mysql
+
+      #-----------------------------------------------
+
+  # 2. Our backend service:
+  appointments-backend-service:
+
+    # Image name to create:
+    image: lior54/appointments-backend-image:1.0
+
+    # Build Image (if not exist) from following Dockerfile locaion:
+    build: ./Backend
+
+    # Container name to create:
+    container_name: appointments-backend-container
+
+    # Port binding:
+    ports:
+      - 4001:4000
+
+    # Restart policy:
+    restart: unless-stopped
+
+    # Environment variables:
+    environment:
+      - PORT=4000
+      - MYSQL_HOST=appointments-database-service # Database service
+      - MYSQL_DATABASE=appointments
+      - MYSQL_USER=Lior
+      - MYSQL_PASSWORD=Nachmias
+
+    # Host volume:
+    volumes:
+
+      # Host volume for nodemon Hor-Reloading:
+      - ./Backend:/app
+
+    depends_on:
+      - appointments-database-service
+
+      # ------------------------
+
+  # 3. Frontend service:
+  appointments-frontend-service:
+
+    # Frontend image:
+    image: lior54/appointments-frontend-image:1.0
+
+    # Build image:
+    build: ./Frontend
+
+    # Container:
+    container_name: apointments-frontend-container
+
+    # Port binding:
+    ports:
+      - 3000:3000
+
+    # Restart policy:
+    restart: unless-stopped
+
+    # Host volumes:
+    volumes:
+      - ./Frontend:/app
+
+    depends_on:
+      - appointments-backend-service
+
+# List of named volumes:
+volumes:
+  appointments-db:
+
