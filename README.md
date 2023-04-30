@@ -1,6 +1,7 @@
 # Meeting Manager
 
 Meeting Manager is a web application that enables users to manage meetings for groups in a hi-tech company. The application is built using React with TypeScript for the frontend and Express with Node.js and TypeScript for the backend. The application is dockerized for easy deployment.
+All of the files are available on dockerhub , lior54 - that's my username.
 
 ## Technologies Used
 
